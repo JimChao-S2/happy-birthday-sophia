@@ -141,10 +141,32 @@ canvas {
     font-weight: 700;
 }
 
-.subtitle {
+.instructions {
+    background: rgba(0, 122, 255, 0.08);
+    border: 1px solid rgba(0, 122, 255, 0.2);
+    border-radius: 8px;
+    padding: 12px;
+    margin-bottom: 10px;
+    width: 100%;
+    text-align: left;
+}
+
+.instructions h3 {
+    color: #007aff;
+    font-size: 15px;
+    margin-bottom: 6px;
+}
+
+.instructions ul {
+    list-style-type: none;
+    padding-left: 0;
+}
+
+.instructions li {
     font-size: 13px;
-    color: #666;
-    margin-bottom: 12px;
+    color: #333;
+    line-height: 1.5;
+    margin-bottom: 4px;
 }
 
 .item-list {
