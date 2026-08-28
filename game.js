@@ -38,6 +38,10 @@ resizeCanvas();
 
 // --- Audio System (Web Audio API) ---
 let audioCtx;
+const bgm = new Audio('assets/bgm.mp3');
+bgm.loop = true;
+bgm.volume = 0.4;
+
 function initAudio() {
     if (!audioCtx) {
         audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -45,6 +49,7 @@ function initAudio() {
     if (audioCtx.state === 'suspended') {
         audioCtx.resume();
     }
+    bgm.play().catch(e => console.log('BGM play failed:', e));
 }
 
 function playTone(freq, type, duration, vol, slideFreq) {
@@ -487,6 +492,8 @@ function loop() {
 function gameOver(reason) {
     gameState = 'GAMEOVER';
     sfx.die();
+    bgm.pause();
+    bgm.currentTime = 0;
     if (score > highScore) {
         highScore = score;
         localStorage.setItem('guangzhou_jump_high_score', highScore);
