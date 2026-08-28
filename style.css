@@ -1,0 +1,138 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    user-select: none; /* 防止選取文字 */
+    -webkit-user-select: none;
+    -webkit-touch-callout: none; /* 防止長按彈出選單 */
+}
+
+body, html {
+    width: 100%;
+    height: 100%;
+    overflow: hidden; /* 防止滾動 */
+    background-color: #ffecd2;
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    touch-action: none; /* 禁用瀏覽器預設手勢 */
+}
+
+#game-container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    max-width: 500px;
+    margin: 0 auto;
+    background: linear-gradient(to bottom, #fcb69f, #ffecd2);
+    overflow: hidden;
+    box-shadow: 0 0 20px rgba(0,0,0,0.1);
+}
+
+canvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+/* UI 疊層 */
+.ui-layer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: rgba(255, 255, 255, 0.6);
+    z-index: 10;
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+    transition: opacity 0.3s ease;
+}
+
+.ui-layer.hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.card {
+    background: white;
+    padding: 30px 20px;
+    border-radius: 20px;
+    text-align: center;
+    box-shadow: 0 10px 25px rgba(255, 100, 100, 0.2);
+    width: 85%;
+    max-width: 350px;
+    animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.card h1 {
+    color: #ff6b6b;
+    font-size: 24px;
+    margin-bottom: 15px;
+}
+
+.card p {
+    color: #555;
+    font-size: 16px;
+    line-height: 1.5;
+    margin-bottom: 20px;
+}
+
+button {
+    background: #ff6b6b;
+    color: white;
+    border: none;
+    padding: 12px 30px;
+    font-size: 18px;
+    border-radius: 30px;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 5px 15px rgba(255, 107, 107, 0.4);
+    transition: transform 0.1s;
+}
+
+button:active {
+    transform: scale(0.95);
+}
+
+.card-birthday {
+    background: linear-gradient(135deg, #fff0f0, #ffe6e6);
+    border: 3px solid #ff9999;
+}
+
+.card-birthday h2 {
+    color: #d63031;
+    margin-bottom: 10px;
+    font-size: 22px;
+}
+
+#hud {
+    position: absolute;
+    top: env(safe-area-inset-top, 20px);
+    left: 20px;
+    font-size: 20px;
+    font-weight: bold;
+    color: #333;
+    background: rgba(255,255,255,0.7);
+    padding: 5px 15px;
+    border-radius: 20px;
+    z-index: 5;
+    pointer-events: none;
+}
+
+/* 左右觸控區，方便測試也可當作點擊感應 */
+#touch-left, #touch-right {
+    position: absolute;
+    top: 0;
+    width: 50%;
+    height: 100%;
+    z-index: 1;
+}
+#touch-left { left: 0; }
+#touch-right { right: 0; }
+
+@keyframes popIn {
+    0% { transform: scale(0.8); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+}
