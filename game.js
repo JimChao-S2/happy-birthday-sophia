@@ -524,8 +524,8 @@ startBtn.addEventListener('click', () => {
 restartBtn.addEventListener('click', () => {
     initAudio();
     gameOverScreen.classList.add('hidden');
-    initGame();
-    gameState = 'PLAYING';
+    startScreen.classList.remove('hidden');
+    gameState = 'START';
 });
 
 requestAnimationFrame(loop);
