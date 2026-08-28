@@ -17,6 +17,18 @@ let highScore = localStorage.getItem('guangzhou_jump_high_score') || 0;
 let cameraY = 0;
 let frameCount = 0;
 
+// Gyroscope Variables
+let gyroActive = false;
+let tilt = 0;
+
+function handleOrientation(event) {
+    let gamma = event.gamma; // Left-to-right tilt in degrees
+    if (gamma > 90) gamma = 90;
+    if (gamma < -90) gamma = -90;
+    tilt = gamma;
+    gyroActive = true;
+}
+
 // Resize Canvas
 function resizeCanvas() {
     const container = document.getElementById('game-container');
@@ -38,7 +50,7 @@ class Player {
         this.gravity = 0.4;
         this.jumpPower = -12;
         this.speed = 6;
-        this.emoji = '👧🏻'; // Q萌女孩 / 蝦餃
+        this.emoji = '👧🏻';
         this.isInvincible = false;
         this.invincibleTimer = 0;
     }
@@ -79,14 +91,12 @@ class Player {
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
         
-        // Draw trailing effect if moving fast upwards
         if (this.vy < -15) {
             ctx.globalAlpha = 0.5;
             ctx.fillText('✨', 0, 30);
             ctx.globalAlpha = 1.0;
         }
 
-        // Draw character
         ctx.fillText(this.emoji, 0, 0);
         ctx.restore();
     }
@@ -96,14 +106,14 @@ class Platform {
     constructor(x, y) {
         this.x = x;
         this.y = y;
-        this.width = 70;
+        this.width = 110; // Increased platform width (was 70)
         this.height = 20;
         
         const rand = Math.random();
         if (rand < 0.1) this.type = 'moving';
-        else if (rand < 0.2) this.type = 'fragile'; // 易碎蛋卷
-        else if (rand < 0.3) this.type = 'car'; // 赣E車牌
-        else this.type = 'normal'; // 蒸籠
+        else if (rand < 0.2) this.type = 'fragile'; 
+        else if (rand < 0.3) this.type = 'car'; 
+        else this.type = 'normal'; 
 
         this.vx = this.type === 'moving' ? (Math.random() > 0.5 ? 2 : -2) : 0;
         this.broken = false;
@@ -125,18 +135,18 @@ class Platform {
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
         
-        let emoji = '🥟'; // default
+        let emoji = '🥟'; 
         if (this.type === 'fragile') emoji = '🥠';
         if (this.type === 'car') emoji = '🚗';
         if (this.type === 'moving') emoji = '🛒';
         
-        ctx.font = '35px Arial';
+        ctx.font = '45px Arial'; // Increased font size for larger platform
         ctx.fillText(emoji, 0, 0);
         
         if (this.type === 'car') {
-            ctx.font = '10px Arial';
+            ctx.font = '12px Arial';
             ctx.fillStyle = 'black';
-            ctx.fillText('赣E', 0, 10);
+            ctx.fillText('赣E', 0, 15);
         }
         ctx.restore();
     }
@@ -145,22 +155,21 @@ class Platform {
 class Item {
     constructor(x, y) {
         this.x = x;
-        this.y = y - 40; // above platform
+        this.y = y - 40; 
         this.size = 30;
         this.collected = false;
         
-        // 綠豆湯 (小衝刺) vs 生日蛋糕 (大衝刺無敵)
         this.type = Math.random() > 0.8 ? 'cake' : 'greenbean';
     }
 
     draw() {
         if (this.collected) return;
         ctx.save();
-        ctx.translate(this.x + 35, this.y); // center of platform is x+35
+        ctx.translate(this.x + 55, this.y); // Center relative to 110 width
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
         ctx.font = '30px Arial';
-        ctx.fillText(this.type === 'cake' ? '🎂' : '🍵', 0, Math.sin(frameCount * 0.1) * 5); // floating animation
+        ctx.fillText(this.type === 'cake' ? '🎂' : '🍵', 0, Math.sin(frameCount * 0.1) * 5);
         ctx.restore();
     }
 }
@@ -172,7 +181,6 @@ class Enemy {
         this.size = 40;
         this.active = true;
         
-        // 气噗噗雲 vs 坑人合約
         this.type = Math.random() > 0.5 ? 'cloud' : 'bill';
         this.vx = Math.random() * 2 - 1;
     }
@@ -185,7 +193,7 @@ class Enemy {
     draw() {
         if (!this.active) return;
         ctx.save();
-        ctx.translate(this.x + 35, this.y);
+        ctx.translate(this.x + 55, this.y); // Center relative to 110 width
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
         ctx.font = '40px Arial';
@@ -217,7 +225,7 @@ function initGame() {
     frameCount = 0;
     
     // Initial platform (safe)
-    platforms.push(new Platform(canvas.width / 2 - 35, canvas.height - 50));
+    platforms.push(new Platform(canvas.width / 2 - 55, canvas.height - 50));
     platforms[0].type = 'normal';
 
     for (let i = 1; i < platformCount; i++) {
@@ -226,11 +234,10 @@ function initGame() {
 }
 
 function generatePlatform(y) {
-    const x = Math.random() * (canvas.width - 70);
+    const x = Math.random() * (canvas.width - 110);
     const p = new Platform(x, y);
     platforms.push(p);
 
-    // Randomly spawn item or enemy on platform (not the first few)
     if (y < canvas.height - 300) {
         if (Math.random() < 0.2) {
             items.push(new Item(x, y));
@@ -260,13 +267,28 @@ window.addEventListener('keydown', (e) => { if (keys.hasOwnProperty(e.code)) key
 window.addEventListener('keyup', (e) => { if (keys.hasOwnProperty(e.code)) keys[e.code] = false; });
 
 function handleInput() {
-    if (touchLeftActive || keys.ArrowLeft) {
-        player.vx = -player.speed;
-    } else if (touchRightActive || keys.ArrowRight) {
-        player.vx = player.speed;
-    } else {
-        player.vx = 0;
+    let finalVx = 0;
+
+    if (gyroActive) {
+        // Map tilt (-30 to 30) to speed
+        let mappedSpeed = (tilt / 30) * player.speed;
+        if (mappedSpeed > player.speed) mappedSpeed = player.speed;
+        if (mappedSpeed < -player.speed) mappedSpeed = -player.speed;
+        
+        // Deadzone
+        if (Math.abs(mappedSpeed) < 0.5) mappedSpeed = 0;
+        
+        finalVx = mappedSpeed;
     }
+
+    // Touch / Keyboard overrides Gyro
+    if (touchLeftActive || keys.ArrowLeft) {
+        finalVx = -player.speed;
+    } else if (touchRightActive || keys.ArrowRight) {
+        finalVx = player.speed;
+    }
+
+    player.vx = finalVx;
 }
 
 // Game Loop
@@ -277,7 +299,6 @@ function update() {
     handleInput();
     player.update();
 
-    // Camera movement / Scrolling
     if (player.y < canvas.height / 2) {
         let diff = canvas.height / 2 - player.y;
         player.y = canvas.height / 2;
@@ -290,10 +311,8 @@ function update() {
     
     currentScoreDisplay.innerText = score;
 
-    // Platform logic
     platforms.forEach(p => p.update());
 
-    // Remove off-screen objects & generate new ones
     platforms = platforms.filter(p => p.y < canvas.height + 50);
     while (platforms.length < platformCount) {
         let highestY = platforms[platforms.length - 1].y;
@@ -323,14 +342,14 @@ function update() {
 
     // Item Collision
     items.forEach(i => {
-        if (!i.collected && Math.abs(player.x - (i.x + 35)) < 40 && Math.abs(player.y - i.y) < 40) {
+        if (!i.collected && Math.abs(player.x - (i.x + 55)) < 45 && Math.abs(player.y - i.y) < 45) {
             i.collected = true;
             if (i.type === 'cake') {
-                player.jump(2.5); // Super boost
+                player.jump(2.5);
                 player.isInvincible = true;
                 player.invincibleTimer = 150;
             } else {
-                player.jump(1.5); // Green bean boost
+                player.jump(1.5);
             }
         }
     });
@@ -338,28 +357,24 @@ function update() {
     // Enemy Collision
     if (!player.isInvincible) {
         enemies.forEach(e => {
-            if (e.active && Math.abs(player.x - (e.x + 35)) < 30 && Math.abs(player.y - e.y) < 30) {
-                // hit enemy
+            if (e.active && Math.abs(player.x - (e.x + 55)) < 35 && Math.abs(player.y - e.y) < 35) {
                 gameOver();
             }
         });
     } else {
-        // Destroy enemy if invincible
         enemies.forEach(e => {
-            if (e.active && Math.abs(player.x - (e.x + 35)) < 50 && Math.abs(player.y - e.y) < 50) {
+            if (e.active && Math.abs(player.x - (e.x + 55)) < 60 && Math.abs(player.y - e.y) < 60) {
                 e.active = false;
             }
         });
     }
 
-    // Fall off screen -> Game Over
     if (player.y > canvas.height) {
         gameOver();
     }
 }
 
 function draw() {
-    // Clear canvas
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     if (gameState === 'PLAYING') {
@@ -387,10 +402,28 @@ function gameOver() {
     gameOverScreen.classList.remove('hidden');
 }
 
-startBtn.addEventListener('click', () => {
+function startGameRoutine() {
     startScreen.classList.add('hidden');
     initGame();
     gameState = 'PLAYING';
+}
+
+startBtn.addEventListener('click', () => {
+    // Request Gyroscope Permission (iOS 13+)
+    if (typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === 'function') {
+        DeviceOrientationEvent.requestPermission()
+            .then(permissionState => {
+                if (permissionState === 'granted') {
+                    window.addEventListener('deviceorientation', handleOrientation);
+                }
+                startGameRoutine();
+            })
+            .catch(console.error);
+    } else {
+        // Non-iOS 13+ devices
+        window.addEventListener('deviceorientation', handleOrientation);
+        startGameRoutine();
+    }
 });
 
 restartBtn.addEventListener('click', () => {
