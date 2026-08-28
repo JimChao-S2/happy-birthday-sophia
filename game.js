@@ -9,6 +9,7 @@ const restartBtn = document.getElementById('restart-btn');
 const scoreDisplay = document.getElementById('score-display');
 const currentScoreDisplay = document.getElementById('current-score');
 const highScoreDisplay = document.getElementById('high-score');
+const deathReasonDisplay = document.getElementById('death-reason');
 
 // Game State
 let gameState = 'START'; // START, PLAYING, GAMEOVER
@@ -358,7 +359,7 @@ function update() {
     if (!player.isInvincible) {
         enemies.forEach(e => {
             if (e.active && Math.abs(player.x - (e.x + 55)) < 35 && Math.abs(player.y - e.y) < 35) {
-                gameOver();
+                gameOver(e.type === 'cloud' ? '被气噗噗雲撞到了！' : '被坑人的電信合約宰了！');
             }
         });
     } else {
@@ -370,7 +371,7 @@ function update() {
     }
 
     if (player.y > canvas.height) {
-        gameOver();
+        gameOver('踩空掉下去啦！');
     }
 }
 
@@ -391,7 +392,7 @@ function loop() {
     requestAnimationFrame(loop);
 }
 
-function gameOver() {
+function gameOver(reason) {
     gameState = 'GAMEOVER';
     if (score > highScore) {
         highScore = score;
@@ -399,6 +400,7 @@ function gameOver() {
     }
     scoreDisplay.innerText = '得分: ' + score;
     highScoreDisplay.innerText = highScore;
+    deathReasonDisplay.innerText = reason;
     gameOverScreen.classList.remove('hidden');
 }
 
