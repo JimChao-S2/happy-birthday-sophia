@@ -38,9 +38,29 @@ resizeCanvas();
 
 // --- Audio System (Web Audio API) ---
 let audioCtx;
-const bgm = new Audio('assets/bgm.mp3');
+const bgm = new Audio();
 bgm.loop = true;
 bgm.volume = 0.4;
+
+// Preload audio to prevent delay on first start
+startBtn.disabled = true;
+startBtn.innerText = '🎶 音樂載入中...';
+startBtn.style.opacity = '0.5';
+
+fetch('assets/bgm.mp3')
+    .then(response => response.blob())
+    .then(blob => {
+        bgm.src = URL.createObjectURL(blob);
+        startBtn.disabled = false;
+        startBtn.innerText = '開始遊戲';
+        startBtn.style.opacity = '1';
+    })
+    .catch(err => {
+        console.error('Audio load failed:', err);
+        startBtn.disabled = false;
+        startBtn.innerText = '開始遊戲 (無音樂)';
+        startBtn.style.opacity = '1';
+    });
 
 function initAudio() {
     if (!audioCtx) {
@@ -49,7 +69,12 @@ function initAudio() {
     if (audioCtx.state === 'suspended') {
         audioCtx.resume();
     }
-    bgm.play().catch(e => console.log('BGM play failed:', e));
+    if (bgm.src) {
+        let playPromise = bgm.play();
+        if (playPromise !== undefined) {
+            playPromise.catch(e => console.log('BGM play failed:', e));
+        }
+    }
 }
 
 function playTone(freq, type, duration, vol, slideFreq) {
@@ -527,6 +552,7 @@ function startGameRoutine() {
 }
 
 startBtn.addEventListener('click', () => {
+    startBtn.innerText = '準備起飛... 🚀';
     initAudio();
     if (typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === 'function') {
         DeviceOrientationEvent.requestPermission()
@@ -535,11 +561,17 @@ startBtn.addEventListener('click', () => {
                     window.addEventListener('deviceorientation', handleOrientation);
                 }
                 startGameRoutine();
+                startBtn.innerText = '開始遊戲'; // Reset for next time
             })
-            .catch(console.error);
+            .catch(err => {
+                console.error(err);
+                startGameRoutine();
+                startBtn.innerText = '開始遊戲';
+            });
     } else {
         window.addEventListener('deviceorientation', handleOrientation);
         startGameRoutine();
+        startBtn.innerText = '開始遊戲';
     }
 });
 
