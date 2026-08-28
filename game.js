@@ -36,6 +36,58 @@ function resizeCanvas() {
 window.addEventListener('resize', resizeCanvas);
 resizeCanvas();
 
+// --- Audio System (Web Audio API) ---
+let audioCtx;
+function initAudio() {
+    if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    }
+    if (audioCtx.state === 'suspended') {
+        audioCtx.resume();
+    }
+}
+
+function playTone(freq, type, duration, vol, slideFreq) {
+    if (!audioCtx) return;
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.type = type;
+    osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+    if (slideFreq) {
+        osc.frequency.exponentialRampToValueAtTime(slideFreq, audioCtx.currentTime + duration);
+    }
+    
+    gain.gain.setValueAtTime(vol, audioCtx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duration);
+    
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+    
+    osc.start();
+    osc.stop(audioCtx.currentTime + duration);
+}
+
+const sfx = {
+    jump: () => playTone(400, 'sine', 0.15, 0.05, 600),
+    break: () => playTone(150, 'sawtooth', 0.2, 0.1, 50),
+    powerup: () => {
+        playTone(500, 'square', 0.1, 0.05);
+        setTimeout(() => playTone(700, 'square', 0.1, 0.05), 100);
+        setTimeout(() => playTone(900, 'square', 0.2, 0.05), 200);
+    },
+    cake: () => {
+        playTone(300, 'square', 0.1, 0.05);
+        setTimeout(() => playTone(400, 'square', 0.1, 0.05), 100);
+        setTimeout(() => playTone(500, 'square', 0.1, 0.05), 200);
+        setTimeout(() => playTone(800, 'square', 0.3, 0.05, 1200), 300);
+    },
+    hit: () => playTone(200, 'sawtooth', 0.3, 0.1, 100),
+    die: () => {
+        playTone(300, 'triangle', 0.2, 0.1, 200);
+        setTimeout(() => playTone(200, 'triangle', 0.4, 0.1, 50), 200);
+    }
+};
+
 // --- Background Drawing (Guangzhou Skyline) ---
 function drawBackground() {
     ctx.fillStyle = '#ffecd2';
@@ -49,7 +101,6 @@ function drawBackground() {
 
     // Draw Canton Tower (Abstract)
     ctx.save();
-    // Parallax effect based on cameraY
     let bgOffset = (cameraY * 0.2) % canvas.height;
     ctx.translate(canvas.width / 2, canvas.height - bgOffset + 200);
     
@@ -348,6 +399,7 @@ function update() {
     enemies = enemies.filter(e => e.y < canvas.height + 50 && e.active);
     enemies.forEach(e => e.update());
 
+    // Collision Player/Platform
     if (player.vy > 0) {
         platforms.forEach(p => {
             if (!p.broken && 
@@ -357,16 +409,19 @@ function update() {
                 player.y + player.size/2 < p.y + p.height) {
                 
                 player.jump();
+                sfx.jump();
                 spawnParticles(player.x, player.y + 20, '💨', 'white', 3);
                 
                 if (p.type === 'fragile') {
                     p.broken = true;
+                    sfx.break();
                     spawnParticles(p.x + p.width/2, p.y + p.height/2, '🥠', 'orange', 5);
                 }
             }
         });
     }
 
+    // Collision Items
     items.forEach(i => {
         if (!i.collected && Math.abs(player.x - (i.x + 55)) < 45 && Math.abs(player.y - i.y) < 45) {
             i.collected = true;
@@ -374,19 +429,23 @@ function update() {
                 player.jump(3.0);
                 player.isInvincible = true;
                 player.invincibleTimer = 200;
+                sfx.cake();
                 spawnParticles(player.x, player.y, '🎂', 'pink', 10);
                 spawnParticles(player.x, player.y - 20, '無敵起飛!', '#ff6b6b', 1);
             } else {
                 player.jump(1.8);
+                sfx.powerup();
                 spawnParticles(player.x, player.y, '🍵', 'green', 5);
                 spawnParticles(player.x, player.y - 20, '綠豆力量!', '#55efc4', 1);
             }
         }
     });
 
+    // Collision Enemies
     if (!player.isInvincible) {
         enemies.forEach(e => {
             if (e.active && Math.abs(player.x - (e.x + 55)) < 35 && Math.abs(player.y - e.y) < 35) {
+                sfx.hit();
                 spawnParticles(player.x, player.y, '💥', 'red', 10);
                 gameOver(e.type === 'cloud' ? '被气噗噗雲撞到了！' : '被坑人的電信合約宰了！');
             }
@@ -395,11 +454,13 @@ function update() {
         enemies.forEach(e => {
             if (e.active && Math.abs(player.x - (e.x + 55)) < 60 && Math.abs(player.y - e.y) < 60) {
                 e.active = false;
+                sfx.hit();
                 spawnParticles(e.x + 55, e.y, '💥', 'orange', 5);
             }
         });
     }
 
+    // Fall out of bounds
     if (player.y > canvas.height) {
         gameOver('踩空掉下去啦！');
     }
@@ -425,6 +486,7 @@ function loop() {
 
 function gameOver(reason) {
     gameState = 'GAMEOVER';
+    sfx.die();
     if (score > highScore) {
         highScore = score;
         localStorage.setItem('guangzhou_jump_high_score', highScore);
@@ -436,12 +498,14 @@ function gameOver(reason) {
 }
 
 function startGameRoutine() {
+    initAudio();
     startScreen.classList.add('hidden');
     initGame();
     gameState = 'PLAYING';
 }
 
 startBtn.addEventListener('click', () => {
+    initAudio();
     if (typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === 'function') {
         DeviceOrientationEvent.requestPermission()
             .then(permissionState => {
@@ -458,6 +522,7 @@ startBtn.addEventListener('click', () => {
 });
 
 restartBtn.addEventListener('click', () => {
+    initAudio();
     gameOverScreen.classList.add('hidden');
     initGame();
     gameState = 'PLAYING';
