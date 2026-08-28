@@ -492,7 +492,7 @@ function update() {
             if (e.active && Math.abs(player.x - (e.x + 55)) < 35 && Math.abs(player.y - e.y) < 35) {
                 sfx.hit();
                 spawnParticles(player.x, player.y, '💥', 'red', 10);
-                gameOver(e.type === 'cloud' ? '被气噗噗雲撞到了！' : '被坑人的電信合約宰了！');
+                gameOver(e.type === 'cloud' ? '被日常的小煩躁气噗噗雲干擾啦！' : '不小心又被坑人的電信帳單宰啦！');
             }
         });
     } else {
@@ -507,7 +507,7 @@ function update() {
 
     // Fall out of bounds
     if (player.y > canvas.height) {
-        gameOver('踩空掉下去啦！');
+        gameOver('踩空掉下去了，派對還沒結束呢！');
     }
 }
 
