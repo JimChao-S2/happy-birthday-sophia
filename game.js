@@ -265,7 +265,14 @@ class Item {
         this.y = y - 40; 
         this.size = 30;
         this.collected = false;
-        this.type = Math.random() > 0.8 ? 'cake' : 'greenbean';
+        let rand = Math.random();
+        if (rand > 0.85) {
+            this.type = 'cake';
+        } else if (rand > 0.6) {
+            this.type = 'book';
+        } else {
+            this.type = 'greenbean';
+        }
     }
     draw() {
         if (this.collected) return;
@@ -274,7 +281,10 @@ class Item {
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
         ctx.font = '30px Arial';
-        ctx.fillText(this.type === 'cake' ? '🎂' : '🍵', 0, Math.sin(frameCount * 0.1) * 5);
+        let emoji = '🍵';
+        if (this.type === 'cake') emoji = '🎂';
+        if (this.type === 'book') emoji = '📖';
+        ctx.fillText(emoji, 0, Math.sin(frameCount * 0.1) * 5);
         ctx.restore();
     }
 }
@@ -437,6 +447,11 @@ function update() {
                 sfx.cake();
                 spawnParticles(player.x, player.y, '🎂', 'pink', 10);
                 spawnParticles(player.x, player.y - 20, '無敵起飛!', '#ff6b6b', 1);
+            } else if (i.type === 'book') {
+                player.jump(2.2);
+                sfx.powerup(); // Reusing powerup sound
+                spawnParticles(player.x, player.y, '📖', 'lightblue', 8);
+                spawnParticles(player.x, player.y - 20, '撒哈拉的靈感!', '#0984e3', 1);
             } else {
                 player.jump(1.8);
                 sfx.powerup();
