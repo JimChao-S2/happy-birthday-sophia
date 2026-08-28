@@ -2,18 +2,24 @@
     box-sizing: border-box;
     margin: 0;
     padding: 0;
-    user-select: none; /* 防止選取文字 */
+    user-select: none;
     -webkit-user-select: none;
-    -webkit-touch-callout: none; /* 防止長按彈出選單 */
+    -webkit-touch-callout: none;
 }
 
 body, html {
     width: 100%;
     height: 100%;
-    overflow: hidden; /* 防止滾動 */
-    background-color: #ffecd2;
-    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-    touch-action: none; /* 禁用瀏覽器預設手勢 */
+    overflow: hidden;
+    /* MacOS Style background with subtle dots */
+    background-color: #f5f5f7;
+    background-image: 
+        radial-gradient(#d1d1d6 2px, transparent 2px),
+        radial-gradient(#d1d1d6 2px, transparent 2px);
+    background-position: 0 0, 20px 20px;
+    background-size: 40px 40px;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    touch-action: none;
 }
 
 #game-container {
@@ -22,9 +28,12 @@ body, html {
     height: 100%;
     max-width: 500px;
     margin: 0 auto;
-    background: linear-gradient(to bottom, #fcb69f, #ffecd2);
+    /* Translucent background for the game area */
+    background: linear-gradient(180deg, rgba(230, 240, 255, 0.8) 0%, rgba(255, 240, 245, 0.8) 100%);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
     overflow: hidden;
-    box-shadow: 0 0 20px rgba(0,0,0,0.1);
+    box-shadow: 0 0 30px rgba(0,0,0,0.1);
 }
 
 canvas {
@@ -43,7 +52,7 @@ canvas {
     display: flex;
     justify-content: center;
     align-items: center;
-    background-color: rgba(255, 255, 255, 0.6);
+    background-color: rgba(255, 255, 255, 0.3);
     z-index: 10;
     backdrop-filter: blur(5px);
     -webkit-backdrop-filter: blur(5px);
@@ -55,38 +64,106 @@ canvas {
     pointer-events: none;
 }
 
+/* MacOS Window Style */
 .card {
-    background: white;
-    padding: 25px 20px;
-    border-radius: 20px;
-    text-align: center;
-    box-shadow: 0 10px 25px rgba(255, 100, 100, 0.2);
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(25px);
+    -webkit-backdrop-filter: blur(25px);
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    border-radius: 12px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(0,0,0,0.05);
     width: 90%;
     max-width: 380px;
-    animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
 }
 
 .start-card {
     max-height: 85vh;
+}
+
+/* MacOS Titlebar */
+.mac-titlebar {
+    height: 38px;
+    background: linear-gradient(180deg, rgba(246, 246, 246, 0.9) 0%, rgba(235, 235, 235, 0.9) 100%);
+    border-bottom: 1px solid rgba(0,0,0,0.1);
+    display: flex;
+    align-items: center;
+    padding: 0 12px;
+    position: relative;
+    flex-shrink: 0;
+}
+
+.mac-buttons {
+    display: flex;
+    gap: 8px;
+    z-index: 2;
+}
+
+.mac-btn {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    box-shadow: inset 0 0 0 1px rgba(0,0,0,0.1);
+}
+
+.close { background: #ff5f56; }
+.minimize { background: #ffbd2e; }
+.maximize { background: #27c93f; }
+
+.mac-title {
+    position: absolute;
+    width: 100%;
+    text-align: center;
+    left: 0;
+    font-size: 13px;
+    font-weight: 600;
+    color: #4d4d4d;
+    pointer-events: none;
+    letter-spacing: 0.5px;
+}
+
+/* Content Area */
+.mac-content {
+    padding: 20px 24px;
     display: flex;
     flex-direction: column;
+    align-items: center;
+    overflow: hidden;
+}
+
+.card h1 {
+    color: #333;
+    font-size: 22px;
+    margin-bottom: 8px;
+    font-weight: 700;
+}
+
+.subtitle {
+    font-size: 13px;
+    color: #666;
+    margin-bottom: 12px;
 }
 
 .item-list {
     flex: 1;
     overflow-y: auto;
     text-align: left;
-    margin: 15px 0;
-    padding: 10px;
-    background: #fdf5e6;
-    border-radius: 10px;
-    border: 2px dashed #ffb6b9;
+    width: 100%;
+    margin: 10px 0 20px 0;
+    padding: 12px;
+    background: rgba(0, 0, 0, 0.03);
+    border-radius: 8px;
+    border: 1px solid rgba(0,0,0,0.06);
+    box-shadow: inset 0 1px 3px rgba(0,0,0,0.02);
 }
 
 .item-row {
     display: flex;
     align-items: center;
-    margin-bottom: 12px;
+    margin-bottom: 14px;
 }
 
 .item-row:last-child {
@@ -94,78 +171,78 @@ canvas {
 }
 
 .item-emoji {
-    font-size: 28px;
+    font-size: 24px;
     margin-right: 12px;
-    min-width: 40px;
+    min-width: 35px;
     text-align: center;
 }
 
 .item-desc {
-    font-size: 14px;
+    font-size: 13px;
     color: #444;
     line-height: 1.4;
 }
 
 .item-desc strong {
-    color: #d63031;
+    color: #111;
+    font-weight: 600;
 }
 
-.card h1 {
-    color: #ff6b6b;
-    font-size: 24px;
-    margin-bottom: 15px;
-}
-
-.card p {
-    color: #555;
-    font-size: 16px;
-    line-height: 1.5;
-    margin-bottom: 20px;
-}
-
+/* MacOS Primary Button */
 button {
-    background: #ff6b6b;
+    background: #007aff;
     color: white;
     border: none;
-    padding: 12px 30px;
-    font-size: 18px;
-    border-radius: 30px;
-    font-weight: bold;
+    padding: 10px 24px;
+    font-size: 15px;
+    border-radius: 6px;
+    font-weight: 500;
     cursor: pointer;
-    box-shadow: 0 5px 15px rgba(255, 107, 107, 0.4);
-    transition: transform 0.1s;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    transition: all 0.15s ease;
+    width: 100%;
+    max-width: 200px;
 }
 
 button:active {
-    transform: scale(0.95);
+    background: #0062cc;
+    transform: scale(0.98);
 }
 
+/* Game Over Card Override */
 .card-birthday {
-    background: linear-gradient(135deg, #fff0f0, #ffe6e6);
-    border: 3px solid #ff9999;
+    padding: 0; /* Remove padding, rely on mac-content */
+}
+
+.card-birthday .mac-content {
+    padding: 30px 20px;
 }
 
 .card-birthday h2 {
-    color: #d63031;
-    margin-bottom: 10px;
-    font-size: 22px;
+    color: #007aff;
+    margin: 15px 0;
+    font-size: 20px;
 }
 
 #hud {
     position: absolute;
     top: env(safe-area-inset-top, 20px);
     left: 20px;
-    font-size: 20px;
-    font-weight: bold;
+    font-size: 18px;
+    font-weight: 600;
     color: #333;
     background: rgba(255,255,255,0.7);
-    padding: 5px 15px;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    padding: 6px 16px;
     border-radius: 20px;
+    border: 1px solid rgba(255,255,255,0.5);
     z-index: 5;
     pointer-events: none;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
 }
 
-/* 左右觸控區，方便測試也可當作點擊感應 */
+/* 左右觸控區 */
 #touch-left, #touch-right {
     position: absolute;
     top: 0;
@@ -177,6 +254,6 @@ button:active {
 #touch-right { right: 0; }
 
 @keyframes popIn {
-    0% { transform: scale(0.8); opacity: 0; }
+    0% { transform: scale(0.9); opacity: 0; }
     100% { transform: scale(1); opacity: 1; }
 }

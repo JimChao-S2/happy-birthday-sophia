@@ -12,34 +12,54 @@
         
         <!-- 開始畫面 -->
         <div id="start-screen" class="ui-layer">
-            <div class="card start-card">
-                <h1>🎂 廣州早茶跳跳 🥟</h1>
-                <p>左右傾斜手機，或點擊螢幕左右側來移動。</p>
-                
-                <div class="item-list">
-                    <div class="item-row"><div class="item-emoji">👧🏻</div><div class="item-desc"><strong>主角 (Sophia)</strong>: Q萌版的妳，為了生日目標不斷向上跳躍！</div></div>
-                    <div class="item-row"><div class="item-emoji">🥟</div><div class="item-desc"><strong>早茶蒸籠</strong>: 廣州必備，最穩固的基礎平台。</div></div>
-                    <div class="item-row"><div class="item-emoji">🚗</div><div class="item-desc"><strong>赣E小車車</strong>: 也是穩固的平台，呼應你們專屬的「淦」笑話 😂</div></div>
-                    <div class="item-row"><div class="item-emoji">🛒</div><div class="item-desc"><strong>早茶推車</strong>: 會左右移動的平台，考驗妳的反應！</div></div>
-                    <div class="item-row"><div class="item-emoji">🥠</div><div class="item-desc"><strong>易碎蛋卷</strong>: 踩一次就會碎裂，千萬別停留太久。</div></div>
-                    <div class="item-row"><div class="item-emoji">🍵</div><div class="item-desc"><strong>綠豆湯</strong>: 因為妳最近一直吃綠豆，吃到它會獲得小衝刺效果！</div></div>
-                    <div class="item-row"><div class="item-emoji">🎂</div><div class="item-desc"><strong>生日蛋糕</strong>: 終極道具！吃到會自帶無敵光環，高速起飛！</div></div>
-                    <div class="item-row"><div class="item-emoji">☁️</div><div class="item-desc"><strong>气噗噗雲</strong>: 碰到會掉落 Game Over，每天都要開心，不要氣噗噗喔！</div></div>
-                    <div class="item-row"><div class="item-emoji">🧾</div><div class="item-desc"><strong>電信帳單</strong>: 碰到也會掉落，遠離坑人的保號套餐，拒當被宰之人！</div></div>
+            <div class="card start-card mac-window">
+                <div class="mac-titlebar">
+                    <div class="mac-buttons">
+                        <span class="mac-btn close"></span>
+                        <span class="mac-btn minimize"></span>
+                        <span class="mac-btn maximize"></span>
+                    </div>
+                    <span class="mac-title">DimSumJump.app</span>
                 </div>
+                <div class="mac-content">
+                    <h1>🎂 廣州早茶跳跳 🥟</h1>
+                    <p class="subtitle">左右傾斜手機，或點擊螢幕左右側來移動。</p>
+                    
+                    <div class="item-list">
+                        <div class="item-row"><div class="item-emoji">👧🏻</div><div class="item-desc"><strong>主角 (Sophia)</strong>: Q萌版的妳，為了生日目標不斷向上跳躍！</div></div>
+                        <div class="item-row"><div class="item-emoji">🥟</div><div class="item-desc"><strong>早茶蒸籠</strong>: 廣州必備，最穩固的基礎平台。</div></div>
+                        <div class="item-row"><div class="item-emoji">🚗</div><div class="item-desc"><strong>赣E小車車</strong>: 也是穩固的跳躍平台，上面印著 赣E 車牌。</div></div>
+                        <div class="item-row"><div class="item-emoji">🛒</div><div class="item-desc"><strong>早茶推車</strong>: 會左右移動的平台，考驗妳的反應！</div></div>
+                        <div class="item-row"><div class="item-emoji">🥠</div><div class="item-desc"><strong>易碎蛋卷</strong>: 踩一次就會碎裂，千萬別停留太久。</div></div>
+                        <div class="item-row"><div class="item-emoji">🍵</div><div class="item-desc"><strong>綠豆湯</strong>: 吃了會獲得小衝刺效果！</div></div>
+                        <div class="item-row"><div class="item-emoji">🎂</div><div class="item-desc"><strong>生日蛋糕</strong>: 終極道具！吃到會自帶無敵光環，高速起飛！</div></div>
+                        <div class="item-row"><div class="item-emoji">☁️</div><div class="item-desc"><strong>气噗噗雲</strong>: 碰到會掉落 Game Over，每天都要開心不生氣！</div></div>
+                        <div class="item-row"><div class="item-desc">🧾 <strong>電信帳單</strong>: 碰到也會掉落，遠離坑人的保號套餐！</div></div>
+                    </div>
 
-                <button id="start-btn">開始遊戲</button>
+                    <button id="start-btn" class="mac-primary-btn">開始遊戲</button>
+                </div>
             </div>
         </div>
 
         <!-- 遊戲結束/結算畫面 -->
         <div id="game-over-screen" class="ui-layer hidden">
-            <div class="card card-birthday">
-                <h1 id="score-display">得分: 0</h1>
-                <h2>🎉 祝 Sophia (璐洋) 生日快樂！ 🎉</h2>
-                <p>再也不當經常被宰之人！<br>每天都不气噗噗！</p>
-                <p class="stats">最高分: <span id="high-score">0</span></p>
-                <button id="restart-btn">再玩一次</button>
+            <div class="card card-birthday mac-window">
+                <div class="mac-titlebar">
+                    <div class="mac-buttons">
+                        <span class="mac-btn close"></span>
+                        <span class="mac-btn minimize"></span>
+                        <span class="mac-btn maximize"></span>
+                    </div>
+                    <span class="mac-title">Message</span>
+                </div>
+                <div class="mac-content">
+                    <h1 id="score-display">得分: 0</h1>
+                    <h2>🎉 祝 Sophia (璐洋) 生日快樂！ 🎉</h2>
+                    <p>再也不當經常被宰之人！<br>每天都不气噗噗！</p>
+                    <p class="stats" style="margin: 15px 0; color: #666;">最高分: <span id="high-score">0</span></p>
+                    <button id="restart-btn" class="mac-primary-btn">再玩一次</button>
+                </div>
             </div>
         </div>
         
